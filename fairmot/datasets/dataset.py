@@ -84,3 +84,18 @@ def letterbox(img, height=608, width=1088,
     img = cv2.resize(img, new_shape, interpolation=cv2.INTER_AREA)  # resized, no border
     img = cv2.copyMakeBorder(img, top, bottom, left, right, cv2.BORDER_CONSTANT, value=color)  # padded rectangular
     return img, ratio, dw, dh
+
+
+def get_blob(img0, img_size=(1088, 608)):
+    assert img0 is not None, 'Failed to load ' + img_path
+
+    # Padded resize
+    img, _, _, _ = letterbox(img0, height=img_size[1], width=img_size[0])
+
+    # Normalize RGB
+    img = img[:, :, ::-1].transpose(2, 0, 1)
+    img = np.ascontiguousarray(img, dtype=np.float32)
+    img /= 255.0
+
+    img = torch.from_numpy(img).cuda().unsqueeze(0)
+    return img
